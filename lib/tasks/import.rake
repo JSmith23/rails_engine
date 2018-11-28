@@ -1,7 +1,7 @@
 namespace :import do 
+  require 'csv'
   desc "imports merchants from a csv file"
   task :merchant => :environment do 
-    require 'csv'
     CSV.foreach("lib/seeds/merchants.csv") do |row|
       id = row[0]
       name = row[1]
