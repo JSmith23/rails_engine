@@ -58,8 +58,65 @@ describe "Merchants API" do
     updated_at = merchant.updated_at 
 
     get "/api/v1/merchants/find?updated_at=#{updated_at}"
+
     expect(response).to be_successful 
     merchant = JSON.parse(response.body)
     expect(merchant["id"]).to eq(id)
   end 
+
+  it "can find all merchants by id" do
+     merch = create(:merchant)
+     id = merch.id
+     
+     get "/api/v1/merchants/find_all?id=#{id}"
+
+     expect(response).to be_successful
+     merchant = JSON.parse(response.body)
+     expect(merch["id"]).to eq(id)
+  end 
+
+  it "can find all merchants by name" do 
+    merch_1 = create(:merchant, name: "Tony")
+    merch_2 = create(:merchant, name: "Tony")
+    merch_3 = create(:merchant, name: "Tony")
+    name = merch_1.name
+
+    get "/api/v1/merchants/find_all?name=#{name}"
+    
+    expect(response).to be_successful 
+    merchant = JSON.parse(response.body)
+    expect(merch_1["name"]).to eq(name)
+    expect(merch_2["name"]).to eq(name)
+    expect(merch_3["name"]).to eq(name)
+  end 
+
+  it "can find all merchant by created_at" do 
+    create_list(:merchant, 5)
+    merchant_1 = Merchant.first 
+
+    get "/api/v1/merchants/find_all?created_at=#{merchant_1.created_at}"
+
+    expect(response).to be_successful
+    merchant = JSON.parse(response.body)
+    expect(Merchant.count).to eq(5)
+  end 
+
+  it "can find all merchants by updated_at" do 
+    create_list(:merchant, 5)
+    merchant_1 = Merchant.first 
+
+    get "/api/v1/merchants/find_all?updated_at=#{merchant_1.updated_at}"
+
+    expect(response).to be_successful
+    merchant = JSON.parse(response.body)
+    expect(Merchant.count).to eq(5)
+  end 
 end 
+
+# describe "Merchant Business Intelligence" do 
+#   it "returns total revenue for a specific merchant" do 
+#     id = create(:merchant).id 
+    
+#     get "/api/v1/merchants/#{id}/revenue"
+#   end 
+# end 
