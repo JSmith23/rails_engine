@@ -8,7 +8,7 @@ describe "Merchants API" do
 
     expect(response).to be_successful 
     merchants = JSON.parse(response.body)
-    expect(merchants.count).to eq(3)
+    expect(merchants["data"].count).to eq(3)
   end 
 
   it "shows a merchant" do 
@@ -19,7 +19,7 @@ describe "Merchants API" do
     merchant = JSON.parse(response.body)
 
     expect(response).to be_successful
-    expect(merchant["id"]).to eq(id)
+    expect(merchant["data"]["id"]).to eq(id.to_s)
   end
 
   it "can find a merchant by id" do 
@@ -29,16 +29,16 @@ describe "Merchants API" do
 
     expect(response).to be_successful
     merchant = JSON.parse(response.body)
-    expect(merchant["id"]).to eq(id)    
+    expect(merchant["data"]["id"]).to eq(id.to_s)    
   end 
 
   it "can find a merchant by name" do 
     name = create(:merchant).name
 
     get "/api/v1/merchants/find?name=#{name}"
-    expect(response).to be_successful
     merchant = JSON.parse(response.body)
-    expect(merchant["name"]).to eq(name)
+    expect(response).to be_successful
+    expect(merchant["data"]["attributes"]["name"]).to eq(name)
   end 
 
   it "can find a merchant by created_at" do
@@ -49,7 +49,7 @@ describe "Merchants API" do
     get "/api/v1/merchants/find?created_at=#{created_at}"
     expect(response).to be_successful 
     merchant = JSON.parse(response.body)
-    expect(merchant["id"]).to eq(id)
+    expect(merchant["data"]["id"]).to eq(id.to_s)
   end 
 
   it "can find a merchant by updated_at" do 
@@ -61,7 +61,7 @@ describe "Merchants API" do
 
     expect(response).to be_successful 
     merchant = JSON.parse(response.body)
-    expect(merchant["id"]).to eq(id)
+    expect(merchant["data"]["id"]).to eq(id.to_s)
   end 
 
   it "can find all merchants by id" do
@@ -83,11 +83,11 @@ describe "Merchants API" do
 
     get "/api/v1/merchants/find_all?name=#{name}"
     
+    merchant = JSON.parse(response.body)['data']
     expect(response).to be_successful 
-    merchant = JSON.parse(response.body)
-    expect(merch_1["name"]).to eq(name)
-    expect(merch_2["name"]).to eq(name)
-    expect(merch_3["name"]).to eq(name)
+    expect(merchant[0]['attributes']['name']).to eq(name)
+    expect(merchant[1]['attributes']['name']).to eq(name)
+    expect(merchant[2]['attributes']['name']).to eq(name)
   end 
 
   it "can find all merchant by created_at" do 
@@ -111,12 +111,16 @@ describe "Merchants API" do
     merchant = JSON.parse(response.body)
     expect(Merchant.count).to eq(5)
   end 
+
+  xit "returns a random merchant" do 
+    create(:merchant)
+    id = Merchant.id
+
+    get "api/v1/merchants/random.json"
+
+    expect(response).to be_successful
+    merchant = JSON.parse(response.body)
+    allow(Merchant).to receive(:random)
+  end 
 end 
 
-# describe "Merchant Business Intelligence" do 
-#   it "returns total revenue for a specific merchant" do 
-#     id = create(:merchant).id 
-    
-#     get "/api/v1/merchants/#{id}/revenue"
-#   end 
-# end 

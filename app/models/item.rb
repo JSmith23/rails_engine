@@ -20,7 +20,7 @@ class Item < ApplicationRecord
       .where(transactions: {result: 'success'})
       .group('DATE(invoices.created_at)')
       .select('SUM(invoice_items.quantity) AS total_quantity, DATE(invoices.created_at) AS date')
-      .order('total_quantity')
+    .order('total_quantity')
       .last
       .date
   end

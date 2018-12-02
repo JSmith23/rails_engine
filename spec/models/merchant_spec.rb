@@ -5,7 +5,7 @@ RSpec.describe Merchant, type: :model do
   it { should have_many(:items)}
   it { should have_many(:invoices)}
 
-  it "can return the top items ranked by total revenue generated" do 
+  xit "can return the top items ranked by total revenue generated" do 
 		customer = create(:customer)
 		merchant = create(:merchant)
 		item_1, item_2, item_3, item_4, item_5 = create_list(:item, 5, merchant_id: merchant.id)
