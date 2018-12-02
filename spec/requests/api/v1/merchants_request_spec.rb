@@ -122,5 +122,29 @@ describe "Merchants API" do
     merchant = JSON.parse(response.body)
     allow(Merchant).to receive(:random)
   end 
+
+  it "returns a collection of items associated with that merchant" do 
+    merchant = create(:merchant)
+    item_1, item_2, item_3, item_4, item_5 = create_list(:item, 5,  merchant_id: merchant.id)
+
+    get "/api/v1/merchants/#{merchant.id}/items"
+
+    expect(response).to be_successful
+    items = JSON.parse(response.body)
+    expect(items['data'].count).to eq(5)
+  end 
+
+  it "returns a collection of invoices associated with that merchant" do 
+    merchant = create(:merchant)
+    customer = create(:customer)
+    invoice_1, invoice_2, invoice_3, invoice_4, invoice_5 = create_list(:invoice, 5, customer_id: customer.id,  merchant_id: merchant.id)
+
+    get "/api/v1/merchants/#{merchant.id}/invoices"
+
+    expect(response).to be_successful
+    invoices = JSON.parse(response.body)
+    expect(invoices['data'].count).to eq(5)
+  end 
+
 end 
 
