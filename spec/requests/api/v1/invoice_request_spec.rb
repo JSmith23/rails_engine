@@ -19,7 +19,6 @@ describe "Invoice API" do
     invoice = create(:invoice, customer_id: customer.id, merchant_id: merchant.id)
     id = invoice.id
 
-
     get "/api/v1/invoices/#{id}.json"
 
     invoices = JSON.parse(response.body)
@@ -127,4 +126,59 @@ describe "Invoice API" do
     merchant = JSON.parse(response.body)
     allow(Merchant).to receive(:random)
   end 
+
+  it "returns a collection of items associated with that invoice" do 
+    merchant = create(:merchant)
+    customer = create(:customer)
+    item_1, item_2, item_3, item_4, item_5 = create_list(:item, 5, merchant_id: merchant.id)
+    invoice = create(:invoice, customer_id: customer.id, merchant_id: merchant.id)
+    id = invoice.id
+
+    get "/api/v1/invoices/#{id}/items"
+
+    expect(response).to be_successful
+    items = JSON.parse(response.body)
+    expect(items['data'].count).to eq(5)
+  end 
+
+  it "returns a collection of customers associated with that invoice" do 
+    merchant = create(:merchant)
+    customer = create(:customer)
+    invoice = create(:invoice, customer_id: customer.id, merchant_id: merchant.id)
+    id = invoice.id
+
+    get "/api/v1/invoices/#{id}/customers"
+
+    expect(response).to be_successful
+    customers = JSON.parse(response.body)
+    expect(customers['data'].count).to eq(1)
+  end
+
+  it "returns a collection of associated transactions" do 
+    merchant = create(:merchant)
+    customer = create(:customer)
+    invoice = create(:invoice, customer_id: customer.id, merchant_id: merchant.id)
+    id = invoice.id
+    tran_1, tran_2, tran_3, = create_list(:transaction, 3, invoice_id: invoice.id)
+
+    get "/api/v1/invoices/#{id}/transactions"
+
+    expect(response).to be_successful
+    transactions = JSON.parse(response.body)
+    expect(transactions['data'].count).to eq(3)
+  end
+
+  it "returns a collection of associated invoice_items" do 
+    merchant = create(:merchant)
+    customer = create(:customer)
+    item = create(:item, merchant_id: merchant.id)
+    invoice = create(:invoice, customer_id: customer.id, merchant_id: merchant.id)
+    inv_1, inv_2, inv_3 = create_list(:invoice_item, 3, item_id: item.id, invoice_id: invoice.id)
+
+    get "/api/v1/invoices/:id/invoice_items"
+
+    expect(response).to be_successful
+    invoice_items = JSON.parse(response.body)
+    expect(invoice_items['data'].count).to eq(3)
+  end
 end 

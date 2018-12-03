@@ -1,6 +1,19 @@
 require 'rails_helper'
 
 describe "Merchants API" do 
+  def json_response
+    JSON.parse(response.body)
+  end
+
+  it 'calls Merchant.revenue method with passed date' do
+    params_date = Date.current
+    revenue_result = double(:revenue_result, total: 100)
+    expect(Merchant).to receive(:revenue).with(params_date.to_s) { revenue_result }
+    
+    get '/api/v1/merchants/revenue', params: { date: params_date }
+    expect(json_response).to eq(100)
+  end
+
   it "sends a list of merchants" do 
     create_list(:merchant, 3)
 
