@@ -3,6 +3,9 @@ class Merchant < ApplicationRecord
   has_many :invoices
   validates_presence_of :name
 
+  def self.revenue(date)
+  end
+  
   def self.most_revenue(limit=5)
     Merchant 
       .select('merchants.id, SUM(invoice_items.quantity * invoice_items.unit_price) AS number_generated')
